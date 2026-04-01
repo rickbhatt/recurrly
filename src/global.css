@@ -37,12 +37,12 @@
   --spacing-24: 96px;
   --spacing-30: 120px;
 
-  --font-sans: sans-regular;
-  --font-sans-light: sans-light;
-  --font-sans-medium: sans-medium;
-  --font-sans-semibold: sans-semibold;
-  --font-sans-bold: sans-bold;
-  --font-sans-extrabold: sans-extrabold;
+  --font-sans: "PlusJakartaSans-Regular";
+  --font-sans-light: "PlusJakartaSans-Light";
+  --font-sans-medium: "PlusJakartaSans-Medium";
+  --font-sans-semibold: "PlusJakartaSans-SemiBold";
+  --font-sans-bold: "PlusJakartaSans-Bold";
+  --font-sans-extrabold: "PlusJakartaSans-ExtraBold";
 }
 
 @layer components {
@@ -119,7 +119,7 @@
   }
 
   .upcoming-card {
-    @apply mr-4 w-44 rounded-2xl border border-black/10 bg-background p-4;
+    @apply mr-4 w-56 rounded-2xl border border-black/10 bg-background p-4;
   }
 
   .upcoming-row {
