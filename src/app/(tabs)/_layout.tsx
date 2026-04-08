@@ -20,7 +20,6 @@ const tabBar = components.tabBar;
 
 const TabLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
-  console.log("🚀 ~ TabLayout ~ isSignedIn:", isSignedIn);
   const insets = useSafeAreaInsets();
 
   if (!isLoaded) {

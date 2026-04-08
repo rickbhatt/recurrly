@@ -10,7 +10,7 @@ import {
   validateVerificationCode,
   type AuthFormErrors,
 } from "@/lib/auth";
-import { useSignUp } from "@clerk/expo";
+import { useAuth, useSignUp } from "@clerk/expo";
 import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -18,6 +18,7 @@ import { Pressable, Text, View } from "react-native";
 const emptyErrors: AuthFormErrors = { fields: {} };
 
 const SignUp = () => {
+  const auth = useAuth();
   const { signUp } = useSignUp();
   const router = useRouter();
 
@@ -39,9 +40,42 @@ const SignUp = () => {
 
   const resetErrors = () => setFormErrors(emptyErrors);
 
+  React.useEffect(() => {
+    console.log("[auth-debug:sign-up-screen] auth", {
+      isLoaded: auth.isLoaded,
+      isSignedIn: auth.isSignedIn,
+      sessionId: auth.sessionId,
+      userId: auth.userId,
+    });
+  }, [auth.isLoaded, auth.isSignedIn, auth.sessionId, auth.userId]);
+
+  React.useEffect(() => {
+    console.log("[auth-debug:sign-up-screen] signUp-resource", {
+      status: signUp?.status ?? null,
+      createdSessionId: signUp?.createdSessionId ?? null,
+      missingFields: signUp?.missingFields ?? [],
+      unverifiedFields: signUp?.unverifiedFields ?? [],
+    });
+  }, [
+    signUp?.createdSessionId,
+    signUp?.missingFields,
+    signUp?.status,
+    signUp?.unverifiedFields,
+  ]);
+
   const finalizeSignUp = async (activeSignUp: NonNullable<typeof signUp>) => {
+    console.log("[auth-debug:sign-up-finalize] before", {
+      status: activeSignUp.status,
+      createdSessionId: activeSignUp.createdSessionId,
+    });
+
     const { error } = await activeSignUp.finalize({
       navigate: ({ session }: { session?: { currentTask?: unknown } }) => {
+        console.log("[auth-debug:sign-up-finalize] navigate", {
+          createdSessionId: activeSignUp.createdSessionId,
+          session,
+        });
+
         if (session?.currentTask) {
           setFormErrors({
             form: "We need one more verification step before opening your workspace.",
@@ -52,6 +86,12 @@ const SignUp = () => {
 
         router.replace("/(tabs)");
       },
+    });
+
+    console.log("[auth-debug:sign-up-finalize] after", {
+      error,
+      status: activeSignUp.status,
+      createdSessionId: activeSignUp.createdSessionId,
     });
 
     if (error) {
@@ -86,6 +126,12 @@ const SignUp = () => {
         password,
       });
 
+      console.log("[auth-debug:sign-up-password] result", {
+        error,
+        status: signUp.status,
+        createdSessionId: signUp.createdSessionId,
+      });
+
       if (error) {
         setFormErrors(
           normalizeClerkError(
@@ -97,6 +143,13 @@ const SignUp = () => {
       }
 
       const { error: sendCodeError } = await signUp.verifications.sendEmailCode();
+
+      console.log("[auth-debug:sign-up-send-email-code] result", {
+        error: sendCodeError,
+        status: signUp.status,
+        createdSessionId: signUp.createdSessionId,
+      });
+
       if (sendCodeError) {
         setFormErrors(
           normalizeClerkError(
@@ -127,6 +180,12 @@ const SignUp = () => {
     try {
       const { error } = await signUp.verifications.verifyEmailCode({
         code: code.trim(),
+      });
+
+      console.log("[auth-debug:sign-up-verify-email-code] result", {
+        error,
+        status: signUp.status,
+        createdSessionId: signUp.createdSessionId,
       });
 
       if (error) {

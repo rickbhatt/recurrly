@@ -1,3 +1,4 @@
+import AuthDebugger from "@/components/auth/auth-debugger";
 import { ClerkLoaded, ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack } from "expo-router";
@@ -13,6 +14,7 @@ if (!publishableKey) {
 const Layout = () => (
   <>
     <StatusBar style="dark" />
+    <AuthDebugger label="root-layout" />
     <Stack
       screenOptions={{
         headerShown: false,
