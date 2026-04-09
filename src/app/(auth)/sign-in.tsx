@@ -12,6 +12,7 @@ import {
 } from "@/lib/auth";
 import { useSignIn } from "@clerk/expo";
 import { Link, useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -20,6 +21,7 @@ const emptyErrors: AuthFormErrors = { fields: {} };
 const SignIn = () => {
   const { signIn } = useSignIn();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +50,12 @@ const SignIn = () => {
           });
           return;
         }
+
+        posthog.identify(emailAddress, {
+          $set: { email: emailAddress },
+          $set_once: { first_sign_inn_date: new Date().toISOString() },
+        });
+        posthog.capture("user_signed_in", { email: emailAddress });
 
         router.replace("/(tabs)");
       },

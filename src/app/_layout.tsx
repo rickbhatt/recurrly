@@ -3,6 +3,7 @@ import { ClerkLoaded, ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { PostHogProvider } from "posthog-react-native";
 import "../global.css";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -29,14 +30,19 @@ const Layout = () => (
 
 export default function RootLayout() {
   return (
-    <ClerkProvider
-      standardBrowser={false}
-      publishableKey={publishableKey as string}
-      tokenCache={tokenCache}
+    <PostHogProvider
+      apiKey={process.env.EXPO_PUBLIC_POSTHOG_KEY as string}
+      options={{ host: process.env.EXPO_PUBLIC_POSTHOG_HOST }}
     >
-      <ClerkLoaded>
-        <Layout />
-      </ClerkLoaded>
-    </ClerkProvider>
+      <ClerkProvider
+        standardBrowser={false}
+        publishableKey={publishableKey as string}
+        tokenCache={tokenCache}
+      >
+        <ClerkLoaded>
+          <Layout />
+        </ClerkLoaded>
+      </ClerkProvider>
+    </PostHogProvider>
   );
 }
